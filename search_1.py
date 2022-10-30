@@ -24,7 +24,7 @@ class Search:
         step = 0
         while True:
 
-            print (f'*** Step {step} ***')
+            print (f'**** Step {step} ****')
             step +=1
             
             # Check if the OPEN queue is empty => goal not found 
