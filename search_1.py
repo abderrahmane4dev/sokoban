@@ -293,6 +293,40 @@ def create_initial_node(board=None):
 
         return initial_node
 
+def dedlock(static_board)  :
+    height = len(static_board)
+    width = len(static_board[0])
+    coin = []
+
+    for i , j in itertools.product(range(height),range(width)) :
+        # dedlock coin 
+        t = 0 
+        lock = 0 
+        for t in range(8) : 
+            if static_board[i,j]==' ':
+                if static_board[i-1,j-1]=='O' : 
+                    lock+=1
+                if static_board[i-1,j]=='O' : 
+                    lock+=1
+                if static_board[i-1,j+1]=='O' : 
+                    lock+=1   
+                if static_board[i,j+1]=='O' : 
+                    lock+=1   
+                if static_board[i+1,j+1]=='O' : 
+                    lock+=1 
+                if static_board[i+1,j]=='O' : 
+                    lock+=1   
+                if static_board[i+1,j-1]=='O' : 
+                    lock+=1 
+                if static_board[i,j-1]=='O' : 
+                    lock+=1  
+            if lock >= 4 : 
+                coin.append([i,j])
+    return coin                        
+            
+
+          
+
 level = board1
 initial_node = create_initial_node(board=level)
 
