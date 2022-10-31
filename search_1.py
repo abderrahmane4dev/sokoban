@@ -297,8 +297,10 @@ def dedlock(static_board)  :
     height = len(static_board)
     width = len(static_board[0])
     coin = []
-    line_x_lock=[]
-    
+    line_i_lock=[]
+    line_j_lock=[]
+    Fline_i_lock=[]
+    Fline_j_lock=[]
 
     for i , j in itertools.product(range(height),range(width)) :
         # dedlock coin 
@@ -319,7 +321,36 @@ def dedlock(static_board)  :
                        
         if lock : 
             
-                coin.append((i,j))    
+                coin.append((i,j)) 
+    i = 0               
+    while i < len(coin) :
+        j=i+1
+        coin_i,coin_j=coin[i]
+        while j<len(coin):
+              coin2_i,coin2_j=coin[j]
+              if coin_i==coin2_i  :       
+                 line_i_lock.append(coin_i)
+              if coin_j==coin2_j :
+                 line_j_lock.append(coin_j) 
+              j+=1     
+        #dedlock line
+        i+=1
+    print("test i ")
+    print(line_i_lock)
+    print(line_j_lock) 
+    murUp=True 
+    murDown=True
+    for i in range(line_i_lock):
+        for j in range(width):
+            if static_board[i-1][j] != 'O' : 
+               murDown=False
+            if static_board[i+1][j] != 'O' : 
+               murUp=False   
+        if murDown or murUp :
+           Fline_i_lock.append(i)
+
+             
+
     return coin                        
             
 
