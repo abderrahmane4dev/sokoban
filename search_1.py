@@ -338,10 +338,13 @@ def dedlock(static_board)  :
     print("test i ")
     print(line_i_lock)
     print(line_j_lock) 
-    murUp=True 
-    murDown=True
-    for i in range(line_i_lock):
+    
+    
+    for i in line_i_lock:
+        murUp=True 
+        murDown=True
         for j in range(width):
+            
             if static_board[i-1][j] != 'O' : 
                murDown=False
             if static_board[i+1][j] != 'O' : 
@@ -349,14 +352,25 @@ def dedlock(static_board)  :
         if murDown or murUp :
            Fline_i_lock.append(i)
 
+    for i in line_j_lock:
+        murLeft=True
+        murRight=True
+        for j in range(height):
+            
+            if static_board[j][i+1]!='O':
+                murRight=False
+            if static_board[j][i-1]!='O':
+                murLeft=False 
+        if murLeft or murRight : 
+            Fline_j_lock.append(i)           
              
 
-    return coin                        
+    return coin,Fline_i_lock,Fline_j_lock                        
             
 
           
 
-level = board1
+level = board3
 initial_node = create_initial_node(board=level)
 
 goalNode, num_steps = Search.breadthFirst(initial_node)
@@ -374,7 +388,12 @@ if goalNode:
 else:
     print ("Optimal solution not found")  
 
-coins = dedlock(initial_node.wall_space_obstacle)
+coins,Ieme,Jeme = dedlock(initial_node.wall_space_obstacle)
 print(initial_node.wall_space_obstacle)
 print('ikd')
 print(coins)
+print('linee is')
+print(Ieme)
+print('Collone is')
+print(Jeme)
+
