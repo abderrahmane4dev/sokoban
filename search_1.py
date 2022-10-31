@@ -4,7 +4,6 @@ from collections import deque
 import itertools
 from copy import deepcopy
 import numpy as np
-import pygame
 import time
 
 class Search:
@@ -343,8 +342,7 @@ def dedlock(static_board)  :
     for i in line_i_lock:
         murUp=True 
         murDown=True
-        for j in range(width):
-            
+        for j in range(width):   
             if static_board[i-1][j] != 'O' : 
                murDown=False
             if static_board[i+1][j] != 'O' : 
@@ -356,7 +354,7 @@ def dedlock(static_board)  :
         murLeft=True
         murRight=True
         for j in range(height):
-            
+                
             if static_board[j][i+1]!='O':
                 murRight=False
             if static_board[j][i-1]!='O':
@@ -366,13 +364,31 @@ def dedlock(static_board)  :
              
 
     return coin,Fline_i_lock,Fline_j_lock                        
-            
+""           
+def verifie_dedlock(Node,coin,Fline_i_lock,Fline_j_lock):
+    coin_lock = False
+    line_i_lock = False
+    line_j_lock = False
+    S_indices_x, S_indices_y = np.where(np.array(Node.state.robot_block) == 'B') 
+    i=0
+    j=0
+    while i<len(S_indices_x) : 
+        if (S_indices_x[i],S_indices_y[j]) in coin :
+            coin_lock = True 
+        if (S_indices_x[i]) in Fline_i_lock : 
+            line_i_lock = True      
+        if (S_indices_y[j]) in Fline_j_lock : 
+            line_j_lock = True   
+        i+=1
+        j+=1        
+    return coin_lock,line_i_lock,line_j_lock,S_indices_x,S_indices_y
+           
 
-          
+        
 
 level = board3
 initial_node = create_initial_node(board=level)
-
+""""
 goalNode, num_steps = Search.breadthFirst(initial_node)
 if goalNode:
     print (f"Optimal Solution found after {num_steps} steps")
@@ -387,7 +403,7 @@ if goalNode:
       
 else:
     print ("Optimal solution not found")  
-
+"""
 coins,Ieme,Jeme = dedlock(initial_node.wall_space_obstacle)
 print(initial_node.wall_space_obstacle)
 print('ikd')
@@ -396,4 +412,16 @@ print('linee is')
 print(Ieme)
 print('Collone is')
 print(Jeme)
+
+coinFinal,lineFinal,ColonneFinal,S_indice_x,S_indice_y =verifie_dedlock(initial_node,coins,Ieme,Jeme)
+if coinFinal : 
+    print("coin ")
+if lineFinal : 
+    print("line ")
+if ColonneFinal : 
+    print("collone ")  
+print(S_indice_x)
+print(S_indice_y)    
+
+       
 
