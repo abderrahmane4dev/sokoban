@@ -297,31 +297,29 @@ def dedlock(static_board)  :
     height = len(static_board)
     width = len(static_board[0])
     coin = []
+    line_x_lock=[]
+    
 
     for i , j in itertools.product(range(height),range(width)) :
         # dedlock coin 
-        t = 0 
-        lock = 0 
-        for t in range(8) : 
-            if static_board[i,j]==' ':
-                if static_board[i-1,j-1]=='O' : 
-                    lock+=1
-                if static_board[i-1,j]=='O' : 
-                    lock+=1
-                if static_board[i-1,j+1]=='O' : 
-                    lock+=1   
-                if static_board[i,j+1]=='O' : 
-                    lock+=1   
-                if static_board[i+1,j+1]=='O' : 
-                    lock+=1 
-                if static_board[i+1,j]=='O' : 
-                    lock+=1   
-                if static_board[i+1,j-1]=='O' : 
-                    lock+=1 
-                if static_board[i,j-1]=='O' : 
-                    lock+=1  
-            if lock >= 4 : 
-                coin.append([i,j])
+       
+        lock=False
+        
+        if static_board[i][j]==' ':
+           if (static_board[i-1][j-1]=='O') and (static_board[i-1][j]=='O') and (static_board[i][j-1]=='O'):  
+                    lock=True
+                    print("position is")
+                    print(i)
+           elif (static_board[i-1][j]=='O') and (static_board[i-1][j+1]=='O') and (static_board[i][j+1]=='O') :
+                    lock = True  
+           elif (static_board[i][j+1]=='O') and (static_board[i+1][j+1]=='O') and (static_board[i+1][j]=='O') :     
+                    lock = True
+           elif (static_board[i+1][j]=='O') and (static_board[i+1][j-1]=='O') and (static_board[i][j-1]=='O') :     
+                    lock = True   
+                       
+        if lock : 
+            
+                coin.append((i,j))    
     return coin                        
             
 
@@ -341,7 +339,11 @@ goalNode, num_steps = Search.A(initial_node, heuristic=3)
 if goalNode:
     print (f"Optimal Solution found after {num_steps} steps")
     solution = goalNode.getSolution()    
-    print(solution)    
+      
 else:
     print ("Optimal solution not found")  
 
+coins = dedlock(initial_node.wall_space_obstacle)
+print(initial_node.wall_space_obstacle)
+print('ikd')
+print(coins)
