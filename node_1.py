@@ -11,6 +11,9 @@ class Node:
     def __init__(self, sokoPuzzle, parent=None, move=""):
         self.state = sokoPuzzle
         self.parent = parent
+        self.Fline_i_lock=[]
+        self.Fline_j_lock=[]
+        self.coin=[]
         if self.parent == None:
             self.moves = move
             # The function g represents the cost from the initial node to the current node. For the initial node, g=0
@@ -22,14 +25,135 @@ class Node:
             g = self.parent.g (which is the cost from the initial node to the parent node) 
                 + 1 (which is the cost from the parent node to the current node = the cost of one move) """
             self.g = self.parent.g + 1         
+    
+    # functon generate list of coins 
+    
 
+    def dedlock(self,static_board)  :
+       
+        height = len(static_board)
+        width = len(static_board[0])
+      
+        line_i_lock=[]
+        line_j_lock=[]
+       
+
+        for i , j in itertools.product(range(height),range(width)) :
+        # dedlock coin 
+       
+            lock=False
+        
+            if static_board[i][j]==' ':
+                if (static_board[i-1][j-1]=='O') and (static_board[i-1][j]=='O') and (static_board[i][j-1]=='O'):  
+                    lock=True
+                   
+                elif (static_board[i-1][j]=='O') and (static_board[i-1][j+1]=='O') and (static_board[i][j+1]=='O') :
+                    lock = True  
+                elif (static_board[i][j+1]=='O') and (static_board[i+1][j+1]=='O') and (static_board[i+1][j]=='O') :     
+                    lock = True
+                elif (static_board[i+1][j]=='O') and (static_board[i+1][j-1]=='O') and (static_board[i][j-1]=='O') :     
+                    lock = True   
+                       
+            if lock : 
+            
+                self.coin.append((i,j)) 
+        i = 0               
+        while i < len(self.coin) :
+            j=i+1
+            coin_i,coin_j=self.coin[i]
+            while j<len(self.coin):
+                 coin2_i,coin2_j=self.coin[j]
+                 if coin_i==coin2_i  :       
+                    line_i_lock.append(coin_i)
+                 if coin_j==coin2_j :
+                    line_j_lock.append(coin_j) 
+                 j+=1     
+        #dedlock line
+            i+=1
+      
+    
+    
+        for i in line_i_lock:
+            murUp=True 
+            murDown=True
+            for j in range(width):   
+                if static_board[i-1][j] != 'O' : 
+                   murDown=False
+                if static_board[i+1][j] != 'O' : 
+                   murUp=False   
+            if murDown or murUp :
+               self.Fline_i_lock.append(i)
+
+        for i in line_j_lock:
+            murLeft=True
+            murRight=True
+            for j in range(height):
+                
+                if static_board[j][i+1]!='O':
+                   murRight=False
+                if static_board[j][i-1]!='O':
+                    murLeft=False 
+            if murLeft or murRight : 
+                self.Fline_j_lock.append(i)           
+             
+
+         
+
+    
+
+    def verifie_dedlock(self):
+        self.dedlock(Node.wall_space_obstacle)
+        coin_lock = False
+        line_i_lock = False
+        line_j_lock = False
+        print("besmelah")
+        print(self.state.robot_block)
+        S_indices_x, S_indices_y = np.where(np.array(self.state.robot_block) == 'B') 
+        i=0
+        j=0
+        while i<len(S_indices_x) : 
+              if (S_indices_x[i],S_indices_y[j]) in self.coin :
+                coin_lock = True 
+                print("zebbyyyyyyyyyy")
+              if (S_indices_x[i]) in self.Fline_i_lock : 
+                line_i_lock = True      
+              if (S_indices_y[j]) in self.Fline_j_lock : 
+                line_j_lock = True   
+              i+=1
+              j+=1  
+                    
+        return coin_lock or line_i_lock or line_j_lock
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     # Generate the successors
     def succ(self):
         succs = deque()
+       
         for m in self.state.moves:
             succState = deepcopy(self.state)
-            if succState.executeMove(m, Node.wall_space_obstacle):
+            if succState.executeMove(m, Node.wall_space_obstacle) and  self.verifie_dedlock()==False : 
+                    
+                print('appendit')
+                print(self.verifie_dedlock())
                 succs.append(Node(succState, self, m))
+            else : 
+                print("reni ma appenditch")    
         return succs
 
     # Return the search solution

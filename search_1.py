@@ -38,9 +38,9 @@ class Search:
 
             # Generate the successors of the current node
             succ = current.succ()
-            while len(succ) != 0:
+            while len(succ) != 0  :
                 child = succ.popleft()
-
+               
                 # Check if the child is not in the OPEN queue and the CLOSED list
                 if (child.state.robot_block not in [n.state.robot_block for n in closed] and \
                     child.state.robot_block not in [n.state.robot_block for n in open]):
@@ -52,6 +52,7 @@ class Search:
                     if child.state.isGoal(Node.wall_space_obstacle):
                         print (f'*** Step {step} ***')
                         print ("Goal reached")
+
                         return child, step   
 
     """ Informed Search """                       
@@ -291,7 +292,8 @@ def create_initial_node(board=None):
         initial_node = Node(SokoPuzzle(robot_block, robot_position))
 
         return initial_node
-
+""""
+# QUESTION 1 DEDLOCK
 def dedlock(static_board)  :
     height = len(static_board)
     width = len(static_board[0])
@@ -364,7 +366,7 @@ def dedlock(static_board)  :
              
 
     return coin,Fline_i_lock,Fline_j_lock                        
-""           
+# QUESTION 2 VERIFICATION DES DEDLOCK POUR UN ETAT ET RETOURNE DES BOOLEEN          
 def verifie_dedlock(Node,coin,Fline_i_lock,Fline_j_lock):
     coin_lock = False
     line_i_lock = False
@@ -381,19 +383,20 @@ def verifie_dedlock(Node,coin,Fline_i_lock,Fline_j_lock):
             line_j_lock = True   
         i+=1
         j+=1        
-    return coin_lock,line_i_lock,line_j_lock,S_indices_x,S_indices_y
+    return coin_lock,line_i_lock,line_j_lock
            
 
         
-
+"""
 level = board3
 initial_node = create_initial_node(board=level)
-""""
+
 goalNode, num_steps = Search.breadthFirst(initial_node)
 if goalNode:
     print (f"Optimal Solution found after {num_steps} steps")
     solution = goalNode.getSolution()        
 else:
+    print("tnakeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeet")
     print ("Optimal solution not found")  
 
 goalNode, num_steps = Search.A(initial_node, heuristic=3)
@@ -402,8 +405,9 @@ if goalNode:
     solution = goalNode.getSolution()    
       
 else:
+    print("nemyy")
     print ("Optimal solution not found")  
-"""
+"""""
 coins,Ieme,Jeme = dedlock(initial_node.wall_space_obstacle)
 print(initial_node.wall_space_obstacle)
 print('ikd')
@@ -413,15 +417,14 @@ print(Ieme)
 print('Collone is')
 print(Jeme)
 
-coinFinal,lineFinal,ColonneFinal,S_indice_x,S_indice_y =verifie_dedlock(initial_node,coins,Ieme,Jeme)
+coinFinal,lineFinal,ColonneFinal =verifie_dedlock(initial_node,coins,Ieme,Jeme)
 if coinFinal : 
-    print("coin ")
+    print("Dedlok en coin existe  ")
 if lineFinal : 
-    print("line ")
+    print("Dedlok line existe ")
 if ColonneFinal : 
-    print("collone ")  
-print(S_indice_x)
-print(S_indice_y)    
+    print("Dedlok collone existe ")  
+ 
 
-       
+"""      
 
