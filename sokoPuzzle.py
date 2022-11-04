@@ -1,5 +1,5 @@
 import numpy as np
-
+import itertools
 """ Representations:
 O => Obstacle
 S => Storage
@@ -15,9 +15,118 @@ class SokoPuzzle:
         # Initialize the SokoPuzzle Board
         self.robot_block = robot_block
         self.robot_position = robot_position 
-                
+        self.count = 0 
+        self.Fline_i_lock=[]
+        self.Fline_j_lock=[]
+        self.coin=[]        
         # List of the robot's moves
         self.moves = ["U", "D", "L", "R"]        
+
+
+    """"
+
+    def dedlock(self,static_board)  :
+           
+        height = len(static_board)
+        width = len(static_board[0])
+      
+        line_i_lock=[]
+        line_j_lock=[]
+       
+
+        for i , j in itertools.product(range(height),range(width)) :
+        # dedlock coin 
+       
+            lock=False
+        
+            if static_board[i][j]==' ':
+                if (static_board[i-1][j-1]=='O') and (static_board[i-1][j]=='O') and (static_board[i][j-1]=='O'):  
+                    lock=True
+                   
+                elif (static_board[i-1][j]=='O') and (static_board[i-1][j+1]=='O') and (static_board[i][j+1]=='O') :
+                    lock = True  
+                elif (static_board[i][j+1]=='O') and (static_board[i+1][j+1]=='O') and (static_board[i+1][j]=='O') :     
+                    lock = True
+                elif (static_board[i+1][j]=='O') and (static_board[i+1][j-1]=='O') and (static_board[i][j-1]=='O') :     
+                    lock = True   
+                       
+            if lock : 
+            
+                self.coin.append((i,j)) 
+        i = 0               
+        while i < len(self.coin) :
+            j=i+1
+            coin_i,coin_j=self.coin[i]
+            while j<len(self.coin):
+                 coin2_i,coin2_j=self.coin[j]
+                 if coin_i==coin2_i  :       
+                    line_i_lock.append(coin_i)
+                 if coin_j==coin2_j :
+                    line_j_lock.append(coin_j) 
+                 j+=1     
+        #dedlock line
+            i+=1
+      
+    
+    
+        for i in line_i_lock:
+            murUp=True 
+            murDown=True
+            for j in range(width):   
+                if static_board[i-1][j] != 'O' : 
+                   murDown=False
+                if static_board[i+1][j] != 'O' : 
+                   murUp=False   
+            if murDown or murUp :
+               self.Fline_i_lock.append(i)
+
+        for i in line_j_lock:
+            murLeft=True
+            murRight=True
+            for j in range(height):
+                
+                if static_board[j][i+1]!='O':
+                   murRight=False
+                if static_board[j][i-1]!='O':
+                    murLeft=False 
+            if murLeft or murRight : 
+                self.Fline_j_lock.append(i)           
+             
+
+    def verifie_dedlock(self,wall_space_obstacle):
+        self.dedlock(wall_space_obstacle)
+        coin_lock = False
+        line_i_lock = False
+        line_j_lock = False
+       
+        
+        S_indices_x, S_indices_y = np.where(np.array(self.robot_block) == 'B') 
+        i=0
+        j=0
+        while i<len(S_indices_x) : 
+              if (S_indices_x[i],S_indices_y[j]) in self.coin :
+                coin_lock = True 
+             
+              if (S_indices_x[i]) in self.Fline_i_lock : 
+                line_i_lock = True      
+              if (S_indices_y[j]) in self.Fline_j_lock : 
+                line_j_lock = True   
+              i+=1
+              j+=1  
+        if (coin_lock or line_i_lock or line_j_lock ) == True : 
+            print('hnaya kyn dedlock lhadj')
+            print(self.robot_block)     
+            self.count = self.count+1    
+            print(self.count)   
+        return coin_lock or line_i_lock or line_j_lock
+
+
+
+        
+"""
+   
+
+
 
     def isGoal(self, wall_space_obstacle):
 
