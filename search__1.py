@@ -180,6 +180,8 @@ class Search:
             while len(succ) != 0:
                 # Pop a child node from the list of successors 
                 child = succ.popleft()
+                print_game(get_matrix(),child.state.robot_block,screen) 
+                pygame.display.update()  
                 # Evaluate the cost f for this child node
                 child.F_Evaluation(heuristic)
                 if verifie_dedlock(child,coins,Ieme,Jeme) == False : 
@@ -211,6 +213,7 @@ class Search:
                                closed.remove(closed[index])
                                 # Put the child in the OPEN list 
                                open.append(child)
+                              
 
 """ ***************************************************** Main function **************************************************** """
 
@@ -294,7 +297,7 @@ def create_initial_node(board=None):
         Node.wall_space_obstacle = wall_space_obstacle        
         initial_node = Node(SokoPuzzle(robot_block, robot_position))
 
-        return initial_node
+        return initial_node,robot_block
 # QUESTION 1 DEDLOCK
 def dedlock(static_board)  :
     height = len(static_board)
@@ -390,8 +393,8 @@ def verifie_dedlock(Node,coin,Fline_i_lock,Fline_j_lock):
 
         
 
-level = board3
-initial_node = create_initial_node(board=level)
+level = board4
+initial_node,robot_block = create_initial_node(board=level)
 """"
 goalNode, num_steps = Search.breadthFirst(initial_node)
 if goalNode:
@@ -400,59 +403,122 @@ if goalNode:
 else:
     print ("Optimal solution not found")  
 """
-coins,Ieme,Jeme = dedlock(initial_node.wall_space_obstacle)
-goalNode, num_steps = Search.A(initial_node, heuristic=3)
-if goalNode:
-    print (f"Optimal Solution found after {num_steps} steps")
-    solution = goalNode.getSolution()    
-      
-else:
-    print ("Optimal solution not found")  
+
+def print_game(matrix,matrixdyn,screen):
+    screen.fill(background)
+    height = len(matrix)
+    
+    width = len(matrix[0])
+    
+    x = 0
+    y = 0
+    i=0 
+    j=0
+    while i<height :
+        while(j)<width:
+            if matrix[i][j] == ' ': #floor
+                screen.blit(floor,(x,y))
+            elif matrix[i][j] == 'O': #wall
+                screen.blit(wall,(x,y))   
+            elif matrix[i][j] == 'R': #worker on floor
+                screen.blit(worker,(x,y))
+            elif matrix[i][j] == 'S': #dock
+                screen.blit(docker,(x,y))   
+            elif  matrix[i][j] == '*': #box on dock
+                screen.blit(box_docked,(x,y))
+            elif  matrix[i][j] == 'B': #box  
+                screen.blit(box,(x,y))
+            elif  matrix[i][j] == '+': #worker on dock
+                screen.blit(worker_docked,(x,y))
+            x = x + 40
+            j=j+1
+        y = y + 40
+        i=i+1
+        j=0
+        x=0    
+        
+    x=0
+    y=0   
+    height = len(matrixdyn)
+    width = len(matrixdyn[0]) 
+    i=0
+    j=0
+    while i<height :
+        while j < width :
+            
+            if matrixdyn[i][j] == 'R': #worker on floor
+                if matrix[i][j]=='S' : 
+                   screen.blit(worker_docked,(x,y)) 
+                else :   
+                   screen.blit(worker,(x,y))
+            elif matrixdyn[i][j] == 'B': #box
+                if matrix[i][j]=='S' : 
+                   screen.blit(box_docked,(x,y)) 
+                else :    
+                   screen.blit(box,(x,y))
+            elif matrixdyn[i][j] == '+': #worker on dock
+                screen.blit(worker_docked,(x,y))
+            x = x + 40
+            j=j+1
+        y = y + 40
+        i=i+1
+        j=0
+        x=0    
+#PYGAME
+def get_matrix():
+        return initial_node.wall_space_obstacle
 
 
-print(initial_node.wall_space_obstacle)
-print('ikd')
-print(coins)
-print('linee is')
-print(Ieme)
-print('Collone is')
-print(Jeme)
-
-coinFi =verifie_dedlock(initial_node,coins,Ieme,Jeme)
-if coinFi : 
-    print("Dedlok en coin existe  ")
- 
-
-
+screen = pygame.display.set_mode((400, 380))  
 pygame.init()  # initialize pygame
 
 clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode((600, 480))
+
 
 
 # Load the background image here. Make sure the file exists!
 
 bg = pygame.image.load(os.path.join("./", "background.png"))
 
-pygame.mouse.set_visible(0)
+pygame.mouse.set_visible(1)
+wall = pygame.image.load('wall.png')
+floor = pygame.image.load('floor.png')
+box = pygame.image.load('box.png')
+box_docked = pygame.image.load('box_docked.png')
+worker = pygame.image.load('worker.png')
+worker_docked = pygame.image.load('worker_dock.png')
+docker = pygame.image.load('dock.png')
+background = 255, 226, 191   
 
-pygame.display.set_caption('Sokoban game')
+
+
+
+
+
+coins,Ieme,Jeme = dedlock(initial_node.wall_space_obstacle)
+goalNode, num_steps = Search.A(initial_node, heuristic=3)
+if goalNode:
+    print (f"Optimal Solution found after {num_steps} steps")
+    solution = goalNode.getSolution()  
+    
+    #pygame.display.set_caption('Sokoban game')
+    print_game(get_matrix(),goalNode.state.robot_block,screen) 
+    pygame.display.update() 
+     
+else:
+    print ("Optimal solution not found")  
+ 
 while True:
     
-    clock.tick(60)
+    clock.tick(10)
 
     screen.blit(bg, (0, 0))
 
     x, y = pygame.mouse.get_pos()
+    
+    
 
-
-    for event in pygame.event.get():
-
-        if event.type == pygame.QUIT:
-
-            sys.exit()
-
-
-    pygame.display.update()   
+       
+    
 
